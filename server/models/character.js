@@ -1,22 +1,27 @@
 const mongoose = require('mongoose');
 
 // > Create a subscription model
-var Subscription = mongoose.model('Subscription', {
+var Character = mongoose.model('Character', {
+    url: {
+        type: String,
+        required: true,
+        trim: true
+    },
     name: { 
         type: String, 
         required: true,
         minlength: 1,
         trim: true
     },
-    id: { 
+    age: {
         type: Number,
         required: true,
         min: 1
     },
-    active: { 
+    alive: { 
         type: Boolean,
         default: true
     }
 });
 
-module.exports = { Subscription };
+module.exports = { Character };

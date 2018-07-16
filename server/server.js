@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 
 // > local imports
 var { mongoose } = require('./db/connection');
-var { Subscription } = require('./models/subscription');
+var { Character } = require('./models/character');
 
 var app = express();
 
@@ -12,14 +12,15 @@ var app = express();
 app.use(bodyParser.json());
 
 // > Create a resource POST /subscribers
-app.post('/subscribers', (req, res) => {
-    var subscriber = new Subscription({
+app.post('/characters', (req, res) => {
+    var character = new Character({
+        url: req.body.url,
         name: req.body.name,
-        id: req.body.id
+        age: req.body.age
     });
 
     // > Send back subscriber info if not error encountered
-    subscriber.save().then((doc) => {
+    character.save().then((doc) => {
         res.send(doc);
     }, (err) => {
         // > Set an http status when an error occur
@@ -39,3 +40,5 @@ app.post('/subscribers', (req, res) => {
 app.listen(3000, () => {
     console.log('Started on port 3000');
 });
+
+module.exports = { app };
