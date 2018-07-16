@@ -15,7 +15,7 @@ var Subscription = mongoose.model('Subscription', {
     },
     active: { 
         type: Boolean,
-        default: false
+        default: true
     }
 });
 
