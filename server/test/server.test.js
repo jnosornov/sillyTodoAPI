@@ -6,37 +6,49 @@ const request = require('supertest');
 const { app } = require('./../server');
 const { Character } = require('./../models/character');
 
+// >> Add a dummy list of characters
+const characters = [{
+    url: "first character url",
+    name: "first character name",
+    age: 24
+}, {
+    url: "second character url",
+    name: "second character name",
+    age: 24
+}];
+
 beforeEach((done) => {
-    Character.remove({}).then(() => done());
+    Character.remove({}).then(() => {
+        // >> use return to chain the callbacks
+        return Character.insertMany(characters);
+    }).then(() => done());
 });
 
 describe('POST /characters', () => {
     it('Should create a new character', (done) => {
-        var character = {
-            url: "This is an url",
-            name: "This is a name",
-            age: 24
-        };
+        var url = "This is an url";
+        var name = "This is a name";
+        var age = 24;
 
         request(app)
             .post('/characters')
-            .send(character)
+            .send({ url, name, age })
             .expect(200)
             .expect((res) => {
-                expect(res.body.url).toBe(character.url);
-                expect(res.body.name).toBe(character.name);
-                expect(res.body.age).toBe(character.age);
+                expect(res.body.url).toBe(url);
+                expect(res.body.name).toBe(name);
+                expect(res.body.age).toBe(age);
             })
             .end((err, res) => {
                 if(err) {
                     return done(err);
                 }
                 // > query to check if character got stored
-                Character.find().then((characters) => {
-                    expect(characters.length).toBe(1);
-                    expect(characters[0].url).toBe(character.url);
-                    expect(characters[0].name).toBe(character.name);
-                    expect(characters[0].age).toBe(character.age);
+                Character.find({ name }).then((docs) => {
+                    expect(docs.length).toBe(1);
+                    expect(docs[0].url).toBe(url);
+                    expect(docs[0].name).toBe(name);
+                    expect(docs[0].age).toBe(age);
                     done();
                 }).catch((err) => done(err));
 
@@ -54,10 +66,22 @@ describe('POST /characters', () => {
                 }
 
                 Character.find().then((characters) => {
-                    expect(characters.length).toBe(0);
+                    expect(characters.length).toBe(2);
                     done();
                 }).catch((err) => done(err));
             });
 
+    });
+});
+
+describe('GET /characters', () => {
+    it('Should get all characters', (done) => {
+        request(app)
+            .get('/characters')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.characters.length).toBe(2);
+            })
+            .end(done);
     });
 });
