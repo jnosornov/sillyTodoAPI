@@ -1,28 +1,5 @@
-const mongoose = require('mongoose');
-
-// > Connect to database
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/ServiceTodo', { useNewUrlParser: true });
-
-// > Create a subscription model
-
-var Subscription = mongoose.model('Subscription', {
-    name: { 
-        type: String, 
-        required: true,
-        minlength: 1,
-        trim: true
-    },
-    id: { 
-        type: Number,
-        required: true,
-        min: 1
-    },
-    active: { 
-        type: Boolean,
-        default: false
-    }
-});
+var { mongoose } = require('./db/connection');
+var { Subscription } = require('./models/subscription');
 
 // > Create a subscription instance
 
