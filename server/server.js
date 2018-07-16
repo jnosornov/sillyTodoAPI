@@ -29,6 +29,14 @@ app.post('/characters', (req, res) => {
 });
 
 // > Get reources GET /subscribers
+app.get('/characters', (req, res) => {
+    // > fetch characters from database
+    Character.find({}).then((characters) => {
+        res.send({ characters });
+    }, (err) => {
+        res.status(400).send(err);
+    });
+});
 
 // > Get a resource GET /subscribers/:id
 
