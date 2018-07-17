@@ -158,3 +158,19 @@ describe('DELETE /characters/:id', () => {
     });
 });
 
+describe('PATCH /characters/:id', () => {
+    it('Should update the character', (done) => {
+        var hexId = characters[0]._id.toHexString();
+        var alive = false;
+
+        request(app)
+            .patch(`/characters/${hexId}`)
+            .send({ alive })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.character.alive).toBe(false);
+            })
+            .end(done);
+    });
+});
+
