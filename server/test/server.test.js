@@ -119,3 +119,42 @@ describe('GET /characters/:id', () => {
             .end(done);
     });
 });
+
+describe('DELETE /characters/:id', () => {
+    it('Should remove a character', (done) => {
+        var hexId = characters[1]._id.toHexString();
+
+        request(app)
+            .delete(`/characters/${hexId}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.character._id).toBe(hexId)
+            })
+            .end((err, res) => {
+                if(err) {
+                    return done(err);
+                }
+
+                Character.findById(hexId).then((character) => {
+                    expect(character).toBeFalsy();
+                    done();
+                }).catch((err) => done(err));
+            });
+    });
+
+    it('Should return a 404 if todo not found', (done) => {
+        var hexId = new ObjectId().toHexString();
+        request(app)
+            .get(`/characters/${hexId}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('Should return a 404 for invalid ids', (done) => {
+        request(app)
+            .get('/characters/123')
+            .expect(404)
+            .end(done);
+    });
+});
+

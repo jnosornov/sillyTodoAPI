@@ -2,6 +2,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var { ObjectId } = require('mongodb');
+var _ = require('lodash');
 
 // > local imports
 var { mongoose } = require('./db/connection');
@@ -76,6 +77,20 @@ app.delete('/characters/:id', (req, res) => {
 });
 
 // > Update a resource PATH /characters/:id
+app.patch('/characters/:id', (req, res) => {
+    var id = req.params.id;
+    // > pull out properties to be update by the user
+    var body = _.pick(req.body, ['alive']);
+
+    Character.findByIdAndUpdate(id, {$set: body}, {new: true}).then((character) => {
+        if(!character) {
+            return res.status(404).send();
+        }
+        res.send({ character });
+    }).catch((err) => {
+        res.status(400).send();
+    });
+});
 
 
 app.listen(3000, () => {
