@@ -1,6 +1,7 @@
 // > library imports
 const expect = require('expect');
 const request = require('supertest');
+const { ObjectId } = require('mongodb');
 
 // > local imports
 const { app } = require('./../server');
@@ -8,10 +9,12 @@ const { Character } = require('./../models/character');
 
 // >> Add a dummy list of characters
 const characters = [{
+    _id: new ObjectId,
     url: "first character url",
     name: "first character name",
     age: 24
 }, {
+    _id: new ObjectId,
     url: "second character url",
     name: "second character name",
     age: 24
@@ -60,6 +63,7 @@ describe('POST /characters', () => {
             .post('/characters')
             .send({})
             .expect(400)
+            // > create a custom query
             .end((err, res) => {
                 if(err) {
                     return done(err);
@@ -79,9 +83,39 @@ describe('GET /characters', () => {
         request(app)
             .get('/characters')
             .expect(200)
+            // > create a custom expect
             .expect((res) => {
                 expect(res.body.characters.length).toBe(2);
             })
+            .end(done);
+    });
+});
+
+describe('GET /characters/:id', () => {
+    it('Should return character document', (done) => {
+        request(app)
+            .get(`/characters/${characters[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.character.url).toBe(characters[0].url);
+                expect(res.body.character.name).toBe(characters[0].name);
+                expect(res.body.character.age).toBe(characters[0].age);
+            })
+            .end(done);
+    });
+
+    it('Should return a 404 if todo not found', (done) => {
+        var hexId = new ObjectId().toHexString();
+        request(app)
+            .get(`/characters/${hexId}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('Should return a 404 for invalid ids', (done) => {
+        request(app)
+            .get('/characters/123')
+            .expect(404)
             .end(done);
     });
 });
