@@ -58,9 +58,24 @@ app.get('/characters/:id', (req, res) => {
     });
 });
 
-// > Delete a resource DELETE /subscribers/:id
+// > Delete a resource DELETE /characters/:id
+app.delete('/characters/:id', (req, res) => {
+    var id = req.params.id;
+    if(!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
 
-// > Update a resource PATH /subscribers/:id
+    Character.findByIdAndRemove(id).then((character) => {
+        if(!character) {
+            return res.status(404).send();
+        }
+        res.send({ character });
+    }).catch((err) => {
+        return res.status(400).send();
+    });
+});
+
+// > Update a resource PATH /characters/:id
 
 
 app.listen(3000, () => {
