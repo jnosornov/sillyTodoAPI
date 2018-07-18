@@ -1,3 +1,5 @@
+require('./config/config');
+
 // > library imports
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -9,7 +11,7 @@ var { mongoose } = require('./db/connection');
 var { Character } = require('./models/character');
 
 var app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // > middleware to use body parser
 app.use(bodyParser.json());
